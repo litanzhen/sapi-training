@@ -1,0 +1,37 @@
+#%RAML 0.8
+title: Sample API
+
+/get-customer-info:
+  get:
+    queryParameters:
+      name:
+        description: customer name
+        example: brian
+        required: true
+        type: string
+    responses:
+      200:
+        body:
+          application/json:
+            example: '{"customer":[{"title":"Mr.","familyName":"Li","givenName":"Tanzhen","dob":"19900101","mobile":"12345678","email":"litanzhen@gmail.com"},
+                               {"title":"Mr.","familyName":"Li","givenName":"Tanzhen","dob":"19900101","mobile":"12345678","email":"litanzhen@gmail.com"}]}'
+      400:
+      500:
+
+/update-customer-info:
+  post:
+    description: update customer info
+    body:
+      application/json
+        example:{"title":"Mr.","familyName":"Li","givenName":"Tanzhen","dob":"19900101","mobile":"12345678","email":"litanzhen@gmail.com"}
+    responses:
+      200:
+        description: return refNo
+        body:
+          application/json:
+            example: '{"refNo","12345678"}'
+      400:
+      500:
+          
+        
+    

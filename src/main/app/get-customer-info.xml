@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <flow name="get:/get-customer-info:sapi-training-config">
+        <logger message="getget" level="INFO" doc:name="Logger"/>
+        <set-variable variableName="name" value="#[message.inboundProperties.'http.query.params'.name]" doc:name="Variable"/>
+        <logger message="#[flowVars.name]" level="INFO" doc:name="Logger"/>
+        <logger message="SQL: select * from mule_training.sapi_training where given_name = '#[flowVars.name]'" level="INFO" doc:name="Logger"/>
+        <db:select config-ref="MySQL_Configuration" doc:name="Database">
+            <db:dynamic-query><![CDATA[select * from mule_training.sapi_training where given_name = '#[flowVars.name]']]></db:dynamic-query>
+        </db:select>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+        <dw:transform-message doc:name="Transform Message" metadata:id="0d7fae21-0b57-4ad0-8609-f858320602b1">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	customer: payload map ((payload01 , indexOfPayload01) -> {
+		refNo: payload01.ref_no,
+		title: payload01.title,
+		familyName: payload01.family_name,
+		givenName: payload01.given_name,
+		dob: payload01.dob,
+		mobile: payload01.mobile,
+		email: payload01.email
+	})
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+        <set-payload value="#[payload]" doc:name="Set Payload"/>
+    </flow>
+</mule>

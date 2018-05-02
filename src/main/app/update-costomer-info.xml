@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+    <flow name="post:/update-customer-info:sapi-training-config">
+        <expression-component doc:name="Expression"><![CDATA[flowVars.refNo = (int) (Math.random()*100000000);]]></expression-component>
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	refNo: flowVars.refNo,
+	title: payload.title,
+	familyName: payload.familyName,
+	givenName: payload.givenName,
+	dob: payload.dob,
+	mobile: payload.mobile,
+	email: payload.email
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+        <logger message="SQL: insert into mule_training.sapi_training ( ref_no, title, family_name, given_name, dob, mobile, email) values (#[payload.refNo], #[payload.title], #[payload.familyName], #[payload.givenName], #[payload.dob], #[payload.mobile], #[payload.email])" level="INFO" doc:name="Logger"/>
+        <db:insert config-ref="MySQL_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[insert into mule_training.sapi_training ( ref_no, title, family_name, given_name, dob, mobile, email) 
+values (#[payload.refNo], #[payload.title], #[payload.familyName], #[payload.givenName], #[payload.dob], #[payload.mobile], #[payload.email])]]></db:parameterized-query>
+        </db:insert>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+    </flow>
+</mule>

@@ -1,0 +1,21 @@
+{
+	"customer": [{
+			"refNo":"12345678",
+			"title": "Mr.",
+			"familyName": "Li",
+			"givenName": "Tanzhen",
+			"dob": "19900101",
+			"mobile": "12345678",
+			"email": "litanzhen@gmail.com"
+		},
+		{
+			"refNo":"12345678",
+			"title": "Mr.",
+			"familyName": "Li",
+			"givenName": "Tanzhen",
+			"dob": "19900101",
+			"mobile": "12345678",
+			"email": "litanzhen@gmail.com"
+		}
+	]
+}
